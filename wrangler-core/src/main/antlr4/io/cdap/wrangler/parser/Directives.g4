@@ -1,19 +1,3 @@
-/*
- * Copyright © 2017-2019 Cask Data, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
-
 grammar Directives;
 
 options {
@@ -24,17 +8,17 @@ options {
 /*
  * Copyright © 2017-2019 Cask Data, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the the Apache License, Version 2.0 (the "License");
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 }
 
@@ -64,6 +48,8 @@ directive
     | stringList
     | numberRanges
     | properties
+    | byteSizeArg        // ✅ ADDED
+    | timeDurationArg    // ✅ ADDED
   )*?
   ;
 
@@ -140,7 +126,15 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool
+ : String | Number | Column | Bool | BYTE_SIZE | TIME_DURATION // 🔺 MODIFIED
+ ;
+
+byteSizeArg
+ : BYTE_SIZE // ✅ ADDED
+ ;
+
+timeDurationArg
+ : TIME_DURATION // ✅ ADDED
  ;
 
 ecommand
@@ -215,15 +209,15 @@ StartsWith : '=^';
 NotStartsWith : '!^';
 EndsWith : '=$';
 NotEndsWith : '!$';
-PlusEqual : '+=';
-SubEqual : '-=';
-MulEqual : '*=';
-DivEqual : '/=';
-PerEqual : '%=';
-AndEqual : '&=';
-OrEqual  : '|=';
-XOREqual : '^=';
-Pow      : '^';
+PlusEqual : '+=' ;
+SubEqual : '-=' ;
+MulEqual : '*=' ;
+DivEqual : '/=' ;
+PerEqual : '%=' ;
+AndEqual : '&=' ;
+OrEqual  : '|=' ;
+XOREqual : '^=' ;
+Pow      : '^' ;
 External : '!';
 GT       : '>';
 LT       : '<';
@@ -270,8 +264,8 @@ Column
  ;
 
 String
- : '\'' ( EscapeSequence | ~('\'') )* '\''
- | '"'  ( EscapeSequence | ~('"') )* '"'
+ : '\'' ( EscapeSequence | ~('\''))* '\''
+ | '"'  ( EscapeSequence | ~('"'))* '"'
  ;
 
 EscapeSequence
@@ -293,7 +287,34 @@ UnicodeEscape
    ;
 
 fragment
-   HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+
+// ✅ NEW BYTE_SIZE and TIME_DURATION tokens
+
+BYTE_SIZE
+  : [0-9]+ ('.' [0-9]+)? BYTE_UNIT
+  ;
+
+TIME_DURATION
+  : [0-9]+ ('.' [0-9]+)? TIME_UNIT
+  ;
+
+fragment BYTE_UNIT
+  : [kK][bB]?
+  | [mM][bB]?
+  | [gG][bB]?
+  ;
+
+fragment TIME_UNIT
+  : 'ms'
+  | 's'
+  | 'sec'
+  | 'seconds'
+  | 'm'
+  | 'min'
+  | 'minutes'
+  ;
 
 Comment
  : ('//' ~[\r\n]* | '/*' .*? '*/' | '--' ~[\r\n]* ) -> skip

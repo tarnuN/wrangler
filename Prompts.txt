@@ -1,0 +1,7 @@
+- How to add custom ANTLR tokens to CDAP Wrangler grammar?
+- How to parse strings like '1.5MB' and '200ms' into bytes/milliseconds in Java?
+- How to create a custom directive in CDAP Wrangler that aggregates values?
+- How to register a new token type like BYTE_SIZE in Wrangler?
+- How to write unit tests using TestingRig in Wrangler?
+- How to connect a directive class to a recipe using UsageDefinition?
+- How to create a README.md for an assignment using ChatGPT?
